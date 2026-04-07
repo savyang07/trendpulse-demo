@@ -38,14 +38,14 @@
 .dash-wrap { max-width: 960px; margin: 0 auto; }
 
 /* topbar */
-.d-logo { font-weight: 900 !important; font-size: 18px !important; letter-spacing: -.5px !important; color: #fff !important; }
+.d-logo { font-weight: 900 !important; font-size: 18px !important; letter-spacing: -.5px !important; color: #ffffff !important; text-shadow: none !important; }
 .d-logo span { color: var(--tt-red) !important; }
 .d-avatar { background: var(--tt-red-dim) !important; border: 1.5px solid var(--tt-red) !important; color: var(--tt-red) !important; }
-.d-topbar { padding: 12px 0 16px !important; }
-#view-dash .d-topbar > div:first-child > * { color: rgba(255,255,255,.5) !important; }
+.d-topbar { padding: 12px 0 16px !important; } #view-dash .d-topbar > div:last-child { color: rgba(255,255,255,.4) !important; }
+#view-dash .d-topbar > div:first-child > .d-niche { color: rgba(255,255,255,.5) !important; }
 
 /* section labels */
-.d-sec { color: rgba(255,255,255,.3) !important; letter-spacing: .12em !important; }
+.d-sec { color: rgba(255,255,255,.35) !important; letter-spacing: .12em !important; font-weight: 400 !important; font-size: 10px !important; }
 
 /* digest */
 .d-digest { background: var(--tt-card) !important; border-color: var(--tt-border) !important; }
@@ -191,9 +191,9 @@
 
 /* agent section */
 .d-agent { background: var(--tt-card) !important; border-color: var(--tt-border) !important; }
-.d-sact { color: var(--tt-red) !important; }
+.d-sact { color: #ffffff !important; }
 .d-sicon { background: var(--tt-red-dim) !important; }
-.d-sbtn2 { border-color: rgba(255,255,255,.15) !important; color: rgba(255,255,255,.7) !important; }
+.d-sbtn2 { border-color: rgba(255,255,255,.3) !important; color: #ffffff !important; background: transparent !important; }
 .d-sbtn2:hover { background: rgba(255,255,255,.06) !important; }
 .d-tb { border-color: rgba(255,255,255,.15) !important; background: transparent !important; }
 .d-tb.uon { background: rgba(32,213,163,.15) !important; border-color: var(--tt-green) !important; }
@@ -218,8 +218,8 @@
 .app-ni.active .app-svg { stroke: var(--tt-red) !important; }
 .app-ni-dot { background: var(--tt-red) !important; }
 .app-feed-tab.on { border-bottom-color: var(--tt-red) !important; }
-.app-sug-title { color: var(--tt-red) !important; }
-.app-sug-cta { background: var(--tt-red-dim) !important; color: var(--tt-red) !important; }
+.app-sug-title { color: #ffffff !important; }
+.app-sug-cta { background: rgba(255,255,255,.08) !important; color: #ffffff !important; border: 0.5px solid rgba(255,255,255,.2) !important; }
 .app-vs-inspo-btn { background: var(--tt-red) !important; }
 .app-vs-inspo-btn:active { background: #d41e45 !important; }
 .app-vs-tlbl { background: rgba(254,44,85,.3) !important; color: #ff8fa0 !important; }
@@ -281,7 +281,7 @@ body{font-family:'Poppins',sans-serif;background:#0d0d14;min-height:100vh}
 .d-logo{font-family:'Poppins',sans-serif;font-size:16px;font-weight:800;color:#111;letter-spacing:-.3px}
 .d-logo span{color:#534AB7}
 .d-avatar{width:32px;height:32px;border-radius:50%;background:#EEEDFE;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#3C3489;font-family:'Poppins',sans-serif}
-.d-niche{font-size:11px;padding:3px 10px;border-radius:20px;background:#f0f0f4;color:#666;border:0.5px solid #ddd}
+.d-niche{font-size:11px;padding:3px 10px;border-radius:20px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.55);border:0.5px solid rgba(255,255,255,.15)}
 .d-sec{font-size:10px;font-weight:600;color:#999;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.65rem;font-family:'Poppins',sans-serif}
 
 /* digest */
@@ -623,7 +623,7 @@ body{font-family:'Poppins',sans-serif;background:#0d0d14;min-height:100vh}
   <div class="d-topbar">
     <div style="display:flex;align-items:center;gap:10px">
       <div class="d-avatar">JK</div>
-      <div class="d-logo">Trend<span>Pulse</span></div>
+      <div class="d-logo"><span style="color:#fff">Trend</span><span style="color:#FE2C55">Pulse</span></div>
       <div class="d-niche">Gaming / Commentary</div>
     </div>
     <div style="font-size:11px;color:#999">Updated 2h ago</div>
