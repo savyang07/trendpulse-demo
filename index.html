@@ -6,6 +6,241 @@
 <title>TrendPulse — Interactive Demo</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
+/* ══ TIKTOK CREATIVE CENTER DESIGN TOKENS ══ */
+:root {
+  --tt-red: #FE2C55;
+  --tt-red-dim: rgba(254,44,85,.15);
+  --tt-red-glow: rgba(254,44,85,.25);
+  --tt-cyan: #25F4EE;
+  --tt-black: #000000;
+  --tt-surface: #121212;
+  --tt-card: #1a1a1a;
+  --tt-border: rgba(255,255,255,.1);
+  --tt-border2: rgba(255,255,255,.06);
+  --tt-text: #ffffff;
+  --tt-text2: rgba(255,255,255,.7);
+  --tt-text3: rgba(255,255,255,.4);
+  --tt-text4: rgba(255,255,255,.25);
+  --tt-green: #20D5A3;
+  --tt-blue: #2F80EC;
+  --tt-font: 'Poppins', sans-serif;
+}
+
+/* override shell */
+.shell-header { background: #000 !important; border-bottom-color: rgba(255,255,255,.08) !important; }
+.shell-logo { font-weight: 900 !important; letter-spacing: -.5px !important; font-size: 18px !important; }
+.shell-logo span { color: var(--tt-red) !important; }
+.vtab.on { background: var(--tt-red) !important; }
+.shell-tag { color: rgba(255,255,255,.2) !important; }
+
+/* ── DASHBOARD overrides ── */
+#view-dash { background: #000 !important; }
+.dash-wrap { max-width: 960px; margin: 0 auto; }
+
+/* topbar */
+.d-logo { font-weight: 900 !important; font-size: 18px !important; letter-spacing: -.5px !important; color: #fff !important; }
+.d-logo span { color: var(--tt-red) !important; }
+.d-avatar { background: var(--tt-red-dim) !important; border: 1.5px solid var(--tt-red) !important; color: var(--tt-red) !important; }
+.d-topbar { padding: 12px 0 16px !important; }
+#view-dash .d-topbar > div:first-child > * { color: rgba(255,255,255,.5) !important; }
+
+/* section labels */
+.d-sec { color: rgba(255,255,255,.3) !important; letter-spacing: .12em !important; }
+
+/* digest */
+.d-digest { background: var(--tt-card) !important; border-color: var(--tt-border) !important; }
+.d-dt { color: #fff !important; font-weight: 700 !important; }
+.d-wk { background: var(--tt-red-dim) !important; color: var(--tt-red) !important; }
+.d-dtext { color: rgba(255,255,255,.6) !important; }
+.d-dtext strong { color: #fff !important; }
+.d-dr { border-bottom-color: var(--tt-border2) !important; }
+.dp { background: var(--tt-red) !important; }
+.dt { background: var(--tt-green) !important; }
+.da { background: var(--tt-cyan) !important; }
+
+/* trend GRID → ranked LIST */
+.d-grid {
+  display: flex !important; flex-direction: column !important;
+  gap: 0 !important; margin-bottom: 1.25rem !important;
+  background: var(--tt-card) !important;
+  border-radius: 14px !important;
+  border: 0.5px solid var(--tt-border) !important;
+  overflow: hidden !important;
+}
+.d-tc {
+  display: flex !important; align-items: center !important;
+  gap: 16px !important; padding: 14px 18px !important;
+  border-radius: 0 !important; border: none !important;
+  border-bottom: 0.5px solid var(--tt-border2) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  cursor: pointer !important;
+  transition: background .15s !important;
+}
+.d-tc:last-child { border-bottom: none !important; }
+.d-tc:hover { background: rgba(255,255,255,.04) !important; border-color: transparent !important; }
+.d-tc.active { background: rgba(254,44,85,.07) !important; border-left: 3px solid var(--tt-red) !important; }
+
+/* rank number */
+.d-tc::before {
+  content: attr(data-rank);
+  font-family: var(--tt-font); font-size: 20px; font-weight: 800;
+  color: rgba(255,255,255,.5); min-width: 28px; text-align: center;
+  flex-shrink: 0;
+}
+
+/* hide old thumb, restyle body */
+.d-tthumb { display: none !important; }
+.d-tbody { padding: 0 !important; flex: 1 !important; }
+.d-tname { font-size: 14px !important; font-weight: 700 !important; color: #fff !important; letter-spacing: -.2px !important; margin-bottom: 2px !important; }
+.d-tmeta { font-size: 11px !important; color: rgba(255,255,255,.4) !important; margin-bottom: 0 !important; }
+.d-bar { display: none !important; }
+.d-blbl { display: none !important; }
+
+/* sparkline placeholder */
+.d-tc-spark {
+  width: 80px; height: 36px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+.d-tc-spark svg { width: 80px; height: 36px; }
+
+/* post count */
+.d-tc-count {
+  text-align: right; flex-shrink: 0; min-width: 60px;
+}
+.d-tc-count-num { font-family: var(--tt-font); font-size: 15px; font-weight: 700; color: #fff; }
+.d-tc-count-lbl { font-size: 10px; color: rgba(255,255,255,.35); margin-top: 1px; }
+
+/* badge */
+.d-tc-badge {
+  flex-shrink: 0; font-size: 10px; font-weight: 700;
+  padding: 3px 8px; border-radius: 20px; min-width: 44px; text-align: center;
+  font-family: var(--tt-font);
+}
+.badge-new { background: rgba(47,128,236,.2); color: #5ea6ff; border: 0.5px solid rgba(47,128,236,.4); }
+.badge-up { color: var(--tt-green); font-size: 11px; }
+.badge-dash { color: rgba(255,255,255,.25); font-size: 13px; }
+
+/* see analytics pill */
+.d-tc-cta {
+  flex-shrink: 0;
+}
+.d-see-btn {
+  font-family: var(--tt-font); font-size: 11px; font-weight: 600;
+  padding: 6px 14px; border-radius: 20px;
+  border: 1px solid rgba(255,255,255,.25);
+  background: transparent; color: rgba(255,255,255,.8);
+  cursor: pointer; white-space: nowrap;
+  transition: border-color .15s, color .15s;
+}
+.d-see-btn:hover { border-color: #fff; color: #fff; }
+
+/* panel → analytics style */
+.d-panel {
+  background: #f5f5f5 !important;
+  border: none !important;
+  border-radius: 14px !important;
+}
+.d-ph { background: #fff !important; border-bottom-color: #eee !important; padding: 1rem 1.25rem !important; }
+.d-ph-title { color: #161823 !important; font-size: 20px !important; font-weight: 800 !important; letter-spacing: -.4px !important; }
+.d-tab { color: #666 !important; border-color: #ddd !important; }
+.d-tab.on { background: #FE2C55 !important; color: #fff !important; border-color: #FE2C55 !important; }
+.d-xbtn { color: #999 !important; border-color: #ddd !important; }
+.d-sec.on { background: transparent !important; }
+.d-hint { color: #999 !important; }
+.d-vt { border-color: #ddd !important; }
+.d-ph-title::before { content: "# "; color: #161823; }
+
+/* analytics insight cards */
+.d-insight-row {
+  display: flex; gap: 12px; padding: 0 1.1rem; margin-bottom: 1rem;
+}
+.d-insight-card {
+  flex: 1; background: #fff; border-radius: 12px;
+  padding: 14px 16px; border: 0.5px solid #e8e8ec;
+}
+.d-insight-lbl { font-size: 12px; color: #666; margin-bottom: 4px; }
+.d-insight-num { font-family: var(--tt-font); font-size: 26px; font-weight: 800; color: #161823; letter-spacing: -.5px; }
+.d-insight-sub { font-size: 11px; color: #999; margin-top: 2px; }
+
+/* area chart box */
+.d-chart-box {
+  background: #fff; border-radius: 12px;
+  margin: 0 1.1rem 1rem; padding: 16px;
+  border: 0.5px solid #e8e8ec;
+}
+.d-chart-title { font-size: 14px; font-weight: 700; color: #161823; margin-bottom: 12px; letter-spacing: -.2px; }
+
+/* brief / dive on light bg */
+.d-bbox { background: #fff !important; border: 0.5px solid #e8e8ec !important; border-radius: 10px !important; }
+.d-blbl { color: #FE2C55 !important; }
+.d-btext { color: #333 !important; }
+.d-hook { color: #161823 !important; border-left-color: #FE2C55 !important; }
+.d-sbtn { background: #FE2C55 !important; border-color: #FE2C55 !important; color: #fff !important; border-radius: 20px !important; }
+.d-dval { color: #333 !important; }
+.d-dlbl { color: #999 !important; }
+
+/* feed overlay */
+.d-feed-ov { border-radius: 14px !important; }
+.d-fpill { background: var(--tt-red-dim) !important; color: #ff6b85 !important; border-color: var(--tt-red-dim) !important; }
+.d-vinspo-btn { background: var(--tt-red) !important; }
+.d-vinspo-btn:hover { background: #d41e45 !important; }
+.d-endback { background: var(--tt-red-dim) !important; border-color: var(--tt-red) !important; color: #ff6b85 !important; }
+.d-endback:hover { background: rgba(254,44,85,.25) !important; }
+.d-navbtn { border-color: rgba(255,255,255,.2) !important; color: rgba(255,255,255,.6) !important; }
+
+/* agent section */
+.d-agent { background: var(--tt-card) !important; border-color: var(--tt-border) !important; }
+.d-sact { color: var(--tt-red) !important; }
+.d-sicon { background: var(--tt-red-dim) !important; }
+.d-sbtn2 { border-color: rgba(255,255,255,.15) !important; color: rgba(255,255,255,.7) !important; }
+.d-sbtn2:hover { background: rgba(255,255,255,.06) !important; }
+.d-tb { border-color: rgba(255,255,255,.15) !important; background: transparent !important; }
+.d-tb.uon { background: rgba(32,213,163,.15) !important; border-color: var(--tt-green) !important; }
+.d-tb.don { background: rgba(254,44,85,.15) !important; border-color: var(--tt-red) !important; }
+.d-sug { border-bottom-color: var(--tt-border2) !important; }
+.d-stext { color: rgba(255,255,255,.65) !important; }
+.d-xbtn { border-color: rgba(255,255,255,.12) !important; color: rgba(255,255,255,.4) !important; }
+#view-dash .d-agent > div:last-child { /* agent header */ }
+#view-dash .d-agent > div:first-child div:last-child { color: #fff !important; }
+
+/* ── APP overrides ── */
+.app-logo span { color: var(--tt-red) !important; }
+.app-avatar { background: var(--tt-red-dim) !important; border-color: var(--tt-red) !important; color: var(--tt-red) !important; }
+.app-wk { background: var(--tt-red-dim) !important; color: var(--tt-red) !important; }
+.app-dp { background: var(--tt-red) !important; }
+.app-dt { background: var(--tt-green) !important; }
+.app-da { background: var(--tt-cyan) !important; }
+.app-bfill.abf-p { background: var(--tt-red) !important; }
+.app-bfill.abf-k { background: var(--tt-cyan) !important; }
+.app-ni.active .app-ni-lbl { color: var(--tt-red) !important; }
+.app-ni.active .app-ni-dot { background: var(--tt-red) !important; }
+.app-ni.active .app-svg { stroke: var(--tt-red) !important; }
+.app-ni-dot { background: var(--tt-red) !important; }
+.app-feed-tab.on { border-bottom-color: var(--tt-red) !important; }
+.app-sug-title { color: var(--tt-red) !important; }
+.app-sug-cta { background: var(--tt-red-dim) !important; color: var(--tt-red) !important; }
+.app-vs-inspo-btn { background: var(--tt-red) !important; }
+.app-vs-inspo-btn:active { background: #d41e45 !important; }
+.app-vs-tlbl { background: rgba(254,44,85,.3) !important; color: #ff8fa0 !important; }
+.app-script-btn { background: var(--tt-red) !important; }
+.app-script-btn:active { background: #d41e45 !important; }
+.app-bb-lbl { color: var(--tt-red) !important; }
+.app-hook { border-left-color: var(--tt-red) !important; }
+.app-pniche { background: var(--tt-red-dim) !important; color: var(--tt-red) !important; }
+.app-hi-saved { background: var(--tt-red-dim) !important; color: var(--tt-red) !important; }
+.app-fbbtn.app-fbon { background: rgba(32,213,163,.12) !important; border-color: var(--tt-green) !important; color: var(--tt-green) !important; }
+.app-btc-dot { background: var(--tt-green) !important; }
+.app-btc-vlbl { color: var(--tt-green) !important; }
+.app-tc { border-color: rgba(255,255,255,.08) !important; }
+.app-tthumb.at-p { background: #1a0810 !important; }
+
+/* vel badges → TikTok style */
+.d-vel { display: none !important; }
+.vel-r, .vel-p { display: none !important; }
+.app-vel.av-r { background: rgba(32,213,163,.15) !important; color: var(--tt-green) !important; }
+.app-vel.av-p { background: rgba(254,44,85,.15) !important; color: var(--tt-red) !important; }
+
 /* ── RESET & ROOT ── */
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
@@ -405,10 +640,46 @@ body{font-family:'Poppins',sans-serif;background:#0d0d14;min-height:100vh}
 
   <div class="d-sec">Trending now for you</div>
   <div class="d-grid">
-    <div class="d-tc active" id="dc-1" onclick="dOpenPanel(1)"><div class="d-tthumb tpurple"><span style="font-size:26px">🎮</span><div class="d-vel vel-r">Rising</div></div><div class="d-tbody"><div class="d-tname">"AI NPC" challenge</div><div class="d-tmeta">Format · 18K videos · 5 day window</div><div class="d-bar"><div class="d-bfill bf-p" style="width:82%"></div></div><div class="d-blbl">82% niche match</div></div></div>
-    <div class="d-tc" id="dc-2" onclick="dOpenPanel(2)"><div class="d-tthumb tteal"><span style="font-size:26px">🔊</span><div class="d-vel vel-r">Rising</div></div><div class="d-tbody"><div class="d-tname">Neon Bleed — Glitch Era</div><div class="d-tmeta">Sound · 2.4M uses · +310%</div><div class="d-bar"><div class="d-bfill bf-t" style="width:91%"></div></div><div class="d-blbl">91% niche match</div></div></div>
-    <div class="d-tc" id="dc-3" onclick="dOpenPanel(3)"><div class="d-tthumb tamber"><span style="font-size:26px">🎬</span><div class="d-vel vel-p">Peaking</div></div><div class="d-tbody"><div class="d-tname">Split-screen reaction</div><div class="d-tmeta">Format · 340K videos</div><div class="d-bar"><div class="d-bfill bf-a" style="width:74%"></div></div><div class="d-blbl">74% niche match</div></div></div>
-    <div class="d-tc" id="dc-4" onclick="dOpenPanel(4)"><div class="d-tthumb tpink"><span style="font-size:26px">🏆</span><div class="d-vel vel-r">Rising</div></div><div class="d-tbody"><div class="d-tname">"Rank it live"</div><div class="d-tmeta">Format · 92K videos · +180%</div><div class="d-bar"><div class="d-bfill bf-k" style="width:67%"></div></div><div class="d-blbl">67% niche match</div></div></div>
+    <div class="d-tc active" id="dc-1" data-rank="1" onclick="dOpenPanel(1)">
+      <div class="d-tbody"><div class="d-tname">"AI NPC" challenge</div><div class="d-tmeta">Format · Gaming / Commentary · 5 day window</div></div>
+      <div class="d-tc-spark"><svg viewBox="0 0 80 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M2 30 Q20 28 35 22 Q50 16 78 4" stroke="#FE2C55" stroke-width="2" stroke-linecap="round" fill="none"/>
+<path d="M2 30 Q20 28 35 22 Q50 16 78 4 L78 36 L2 36 Z" fill="rgba(254,44,85,.12)"/>
+</svg></div>
+      <div class="d-tc-count"><div class="d-tc-count-num">18K</div><div class="d-tc-count-lbl">Posts</div></div>
+      <span class="d-tc-badge badge-new">NEW</span>
+      <div class="d-tc-cta"><button class="d-see-btn" onclick="event.stopPropagation();dOpenPanel(1)">See analytics</button></div>
+    </div>
+    <div class="d-tc" id="dc-2" data-rank="2" onclick="dOpenPanel(2)">
+      <div class="d-tbody"><div class="d-tname">Neon Bleed — Glitch Era</div><div class="d-tmeta">Sound · +310% this week</div></div>
+      <div class="d-tc-spark"><svg viewBox="0 0 80 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M2 30 Q20 28 35 22 Q50 16 78 4" stroke="#FE2C55" stroke-width="2" stroke-linecap="round" fill="none"/>
+<path d="M2 30 Q20 28 35 22 Q50 16 78 4 L78 36 L2 36 Z" fill="rgba(254,44,85,.12)"/>
+</svg></div>
+      <div class="d-tc-count"><div class="d-tc-count-num">2.4M</div><div class="d-tc-count-lbl">Posts</div></div>
+      <span class="d-tc-badge badge-up">↑ 3</span>
+      <div class="d-tc-cta"><button class="d-see-btn" onclick="event.stopPropagation();dOpenPanel(2)">See analytics</button></div>
+    </div>
+    <div class="d-tc" id="dc-3" data-rank="3" onclick="dOpenPanel(3)">
+      <div class="d-tbody"><div class="d-tname">Split-screen reaction</div><div class="d-tmeta">Format · Broad niche · Peaking</div></div>
+      <div class="d-tc-spark"><svg viewBox="0 0 80 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M2 20 Q20 8 40 6 Q55 4 65 10 Q72 16 78 22" stroke="#FE2C55" stroke-width="2" stroke-linecap="round" fill="none"/>
+<path d="M2 20 Q20 8 40 6 Q55 4 65 10 Q72 16 78 22 L78 36 L2 36 Z" fill="rgba(254,44,85,.1)"/>
+</svg></div>
+      <div class="d-tc-count"><div class="d-tc-count-num">340K</div><div class="d-tc-count-lbl">Posts</div></div>
+      <span class="d-tc-badge badge-dash">—</span>
+      <div class="d-tc-cta"><button class="d-see-btn" onclick="event.stopPropagation();dOpenPanel(3)">See analytics</button></div>
+    </div>
+    <div class="d-tc" id="dc-4" data-rank="4" onclick="dOpenPanel(4)">
+      <div class="d-tbody"><div class="d-tname">"Rank it live" format</div><div class="d-tmeta">Format · +180% this week</div></div>
+      <div class="d-tc-spark"><svg viewBox="0 0 80 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M2 24 Q30 22 50 20 Q65 19 78 18" stroke="#FE2C55" stroke-width="2" stroke-linecap="round" fill="none"/>
+<path d="M2 24 Q30 22 50 20 Q65 19 78 18 L78 36 L2 36 Z" fill="rgba(254,44,85,.08)"/>
+</svg></div>
+      <div class="d-tc-count"><div class="d-tc-count-num">92K</div><div class="d-tc-count-lbl">Posts</div></div>
+      <span class="d-tc-badge badge-up">↑ 10</span>
+      <div class="d-tc-cta"><button class="d-see-btn" onclick="event.stopPropagation();dOpenPanel(4)">See analytics</button></div>
+    </div>
   </div>
 
   <!-- FEED OVERLAY -->
@@ -437,7 +708,94 @@ body{font-family:'Poppins',sans-serif;background:#0d0d14;min-height:100vh}
   <!-- PANELS -->
   <div class="d-panel open" id="dp-1">
     <div class="d-ph"><div class="d-ph-title">🎮 "AI NPC" challenge</div><div style="display:flex;gap:6px;align-items:center"><div class="d-tabs"><button class="d-tab on" onclick="dSwitchTab(1,'scroll')">Sample videos</button><button class="d-tab" onclick="dSwitchTab(1,'brief')">Content brief</button><button class="d-tab" onclick="dSwitchTab(1,'dive')">Deep dive</button></div><button class="d-xbtn" onclick="dClosePanel(1)">✕</button></div></div>
-    <div class="d-sec on" id="dp1-scroll"><div class="d-hint">Click any video to enter the full-screen trend feed from that point</div><div class="d-hrow">
+    <div class="d-sec on" id="dp1-scroll">
+      <div class="d-insight-row">
+        <div class="d-insight-card">
+          <div class="d-insight-lbl">Posts</div>
+          <div class="d-insight-num">18K</div>
+          <div class="d-insight-sub">Last 7 days · United States</div>
+        </div>
+        <div class="d-insight-card">
+          <div class="d-insight-lbl">Overall posts</div>
+          <div class="d-insight-num">340K</div>
+          <div class="d-insight-sub">All time</div>
+        </div>
+        <div class="d-insight-card">
+          <div class="d-insight-lbl">Niche match</div>
+          <div class="d-insight-num" style="color:#FE2C55">82%</div>
+          <div class="d-insight-sub">Gaming / Commentary</div>
+        </div>
+      </div>
+      <div class="d-chart-box">
+        <div class="d-chart-title">Interest over time</div>
+        <svg viewBox="0 0 600 140" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:140px">
+<defs>
+  <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#FE2C55" stop-opacity="0.3"/>
+    <stop offset="100%" stop-color="#FE2C55" stop-opacity="0.02"/>
+  </linearGradient>
+</defs>
+<path d="M0 110 Q75 108 120 95 Q180 78 240 65 Q300 52 360 38 Q420 24 480 14 Q540 6 600 2"
+  stroke="#FE2C55" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+<path d="M0 110 Q75 108 120 95 Q180 78 240 65 Q300 52 360 38 Q420 24 480 14 Q540 6 600 2 L600 140 L0 140 Z"
+  fill="url(#areaGrad)"/>
+<text x="0" y="135" font-family="Poppins,sans-serif" font-size="10" fill="#999">Mar 30</text>
+<text x="180" y="135" font-family="Poppins,sans-serif" font-size="10" fill="#999">Apr 1</text>
+<text x="370" y="135" font-family="Poppins,sans-serif" font-size="10" fill="#999">Apr 3</text>
+<text x="540" y="135" font-family="Poppins,sans-serif" font-size="10" fill="#999">Apr 5</text>
+</svg>
+      </div>
+      <div style="display:flex;gap:12px;padding:0 1.1rem;margin-bottom:1rem">
+        <div class="d-insight-card" style="flex:0 0 180px;text-align:center">
+          <div class="d-insight-lbl" style="margin-bottom:10px">Age range</div>
+          <svg viewBox="0 0 160 160" width="160" height="160">
+<circle cx="80" cy="80" r="55" fill="none" stroke="#FE2C55" stroke-width="22"
+  stroke-dasharray="173 346" stroke-dashoffset="87" transform="rotate(-90 80 80)"/>
+<circle cx="80" cy="80" r="55" fill="none" stroke="#25F4EE" stroke-width="22"
+  stroke-dasharray="93 346" stroke-dashoffset="-86" transform="rotate(-90 80 80)"/>
+<circle cx="80" cy="80" r="55" fill="none" stroke="#444" stroke-width="22"
+  stroke-dasharray="80 346" stroke-dashoffset="-179" transform="rotate(-90 80 80)"/>
+<text x="80" y="76" text-anchor="middle" font-family="Poppins,sans-serif" font-size="11" fill="#666">Age</text>
+<text x="80" y="91" text-anchor="middle" font-family="Poppins,sans-serif" font-size="10" fill="#666">range</text>
+</svg>
+          <div style="display:flex;justify-content:center;gap:10px;margin-top:8px;flex-wrap:wrap">
+            <span style="font-size:10px;color:#FE2C55;font-weight:600">● 50% 18–24</span>
+            <span style="font-size:10px;color:#25F4EE;font-weight:600">● 27% 25–34</span>
+            <span style="font-size:10px;color:#555;font-weight:600">● 23% 35+</span>
+          </div>
+        </div>
+        <div class="d-insight-card" style="flex:1">
+          <div class="d-insight-lbl" style="margin-bottom:10px">Related interests</div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px">
+            <span style="background:#FE2C55;color:#fff;font-size:11px;font-weight:700;padding:5px 12px;border-radius:20px">Gaming 🔥 94</span>
+            <span style="background:#ffebee;color:#d32f2f;font-size:11px;font-weight:600;padding:5px 12px;border-radius:20px">Comedy 🔥 88</span>
+            <span style="background:#ffebee;color:#d32f2f;font-size:11px;font-weight:600;padding:5px 12px;border-radius:20px">AI & Tech 🔥 85</span>
+            <span style="background:#fce4ec;color:#c2185b;font-size:10px;font-weight:600;padding:4px 10px;border-radius:20px">Streaming 🔥 79</span>
+            <span style="background:#fce4ec;color:#c2185b;font-size:10px;font-weight:600;padding:4px 10px;border-radius:20px">Esports 🔥 74</span>
+          </div>
+          <div style="margin-top:12px">
+            <div style="font-size:11px;font-weight:600;color:#161823;margin-bottom:6px">Top regions</div>
+            <div style="font-size:11px;color:#444;margin-bottom:4px;display:flex;align-items:center;gap:8px">
+              <span style="min-width:16px;color:#999">1</span> United States
+              <div style="flex:1;height:4px;background:#eee;border-radius:2px"><div style="width:100%;height:4px;background:#FE2C55;border-radius:2px"></div></div>
+              <span style="color:#FE2C55;font-weight:700">🔥 512</span>
+            </div>
+            <div style="font-size:11px;color:#444;margin-bottom:4px;display:flex;align-items:center;gap:8px">
+              <span style="min-width:16px;color:#999">2</span> United Kingdom
+              <div style="flex:1;height:4px;background:#eee;border-radius:2px"><div style="width:72%;height:4px;background:#FE2C55;border-radius:2px"></div></div>
+              <span style="color:#FE2C55;font-weight:700">🔥 368</span>
+            </div>
+            <div style="font-size:11px;color:#444;display:flex;align-items:center;gap:8px">
+              <span style="min-width:16px;color:#999">3</span> Canada
+              <div style="flex:1;height:4px;background:#eee;border-radius:2px"><div style="width:55%;height:4px;background:#FE2C55;border-radius:2px"></div></div>
+              <span style="color:#FE2C55;font-weight:700">🔥 281</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="padding:0 1.1rem;margin-bottom:.5rem">
+        <div class="d-hint">Sample videos — click any to enter the trend feed</div>
+      </div><div class="d-hrow">
       <div class="d-vc" onclick="dOpenFeed(1,0)"><div class="d-vt vbg1"><span style="font-size:24px">🤖</span><div class="d-vhov"><div class="d-play"><svg width="10" height="12" viewBox="0 0 10 12" fill="#534AB7"><polygon points="0,0 10,6 0,12"/></svg></div></div><div class="d-vplat plt-tt">TikTok</div><div class="d-vmatch">High match</div><div class="d-vviews">2.1M</div></div><div class="d-vhandle">@glitchhunter</div><div class="d-vcap">AI controlled my character for 60s</div></div>
       <div class="d-vc" onclick="dOpenFeed(1,1)"><div class="d-vt vbg2"><span style="font-size:24px">🎮</span><div class="d-vhov"><div class="d-play"><svg width="10" height="12" viewBox="0 0 10 12" fill="#534AB7"><polygon points="0,0 10,6 0,12"/></svg></div></div><div class="d-vplat plt-tt">TikTok</div><div class="d-vmatch">High match</div><div class="d-vviews">890K</div></div><div class="d-vhandle">@npcgod</div><div class="d-vcap">Letting the AI decide every move</div></div>
       <div class="d-vc" onclick="dOpenFeed(1,2)"><div class="d-vt vbg3"><span style="font-size:24px">🕹️</span><div class="d-vhov"><div class="d-play"><svg width="10" height="12" viewBox="0 0 10 12" fill="#993556"><polygon points="0,0 10,6 0,12"/></svg></div></div><div class="d-vplat plt-ig">Instagram</div><div class="d-vviews">1.4M</div></div><div class="d-vhandle">@arcadebrainrot</div><div class="d-vcap">Origin — started on IG</div></div>
